@@ -1,0 +1,30 @@
+name: "indexer-deploy"      # set whatevername you want to your github job
+on:
+  push:
+    branches:
+      - 'releases/**'
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+      - name: build, push and deploy
+        id: heroku
+        uses: snithyanantham/docker-compose-multiple-apps-heroku-deploy@v1.0
+        with:
+          email: ${{ secrets.HEROKU_EMAIL }}      # your heroku email
+          api_key: ${{ secrets.HEROKU_API_KEY }}  # your  heroku api key
+          docker_compose_file: "../.docker/docker-compose.yml"
+          heroku_apps: '[
+            {
+              "imagename":"mongodb",
+              "appname":"mongodb",
+              "apptype":"db"
+            },
+            {
+              "imagename":"app",
+              "appname":"app",
+              "apptype":"web"
+            }
+          ]'
